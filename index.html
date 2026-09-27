@@ -1,0 +1,450 @@
+<a href="data:text/html;charset=utf-8,<!DOCTYPE html>
+<html lang=%22nl%22>
+<head>
+  <meta charset=%22UTF-8%22>
+  <meta name=%22viewport%22 content=%22width=device-width, initial-scale=1.0%22>
+  <title>De Grote Efteling Sprookjesquiz</title>
+  <link rel=%22preconnect%22 href=%22https://fonts.googleapis.com%22>
+  <link rel=%22preconnect%22 href=%22https://fonts.gstatic.com%22 crossorigin>
+  <link href=%22https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=IM+Fell+English:ital@0;1&family=Plus+Jakarta+Sans:wght@600;800&display=swap%22 rel=%22stylesheet%22>
+  <script src=%22https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js%22></script>
+  <script src=%22https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js%22></script>
+  <style>
+    :root {
+      --bg-dark: %230f1c15;
+      --bg-card: %23182e23;
+      --gold: %23dfb15b;
+      --gold-light: %23f7e1a0;
+      --ruby: %238a1c14;
+      --cream: %23f4eedb;
+      --btn-a: %23c0392b;
+      --btn-b: %232980b9;
+      --btn-c: %23d35400;
+      --btn-d: %2327ae60;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 25 30%25, %231f3d2e 0%25, var(--bg-dark) 85%25);
+      color: var(--cream);
+      font-family: 'IM Fell English', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 1rem;
+    }
+    h1, h2, h3 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--gold);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 12px rgba(223, 177, 91, 0.4);
+      text-align: center;
+    }
+    .container { width: 100%25; max-width: 1100px; margin: auto; display: flex; flex-direction: column; align-items: center; }
+    .pieck-box {
+      background: var(--bg-card);
+      border: 3px double var(--gold);
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,0,0,0.5);
+      position: relative;
+      width: 100%25;
+      text-align: center;
+    }
+    .btn {
+      font-family: 'Cinzel Decorative', serif;
+      font-weight: bold;
+      background: linear-gradient(180deg, %23c59b48 0%25, %238c6823 100%25);
+      color: %23fff;
+      border: 2px solid var(--gold-light);
+      padding: 0.9rem 2.2rem;
+      font-size: 1.3rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-shadow: 1px 1px 2px %23000;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(223, 177, 91, 0.5);
+      background: linear-gradient(180deg, %23dfb15b 0%25, %23a67c2e 100%25);
+    }
+    #mode-selection { display: flex; flex-direction: column; gap: 1.5rem; align-items: center; }
+    #tv-screen { display: none; width: 100%25; }
+    .tv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%25;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(223, 177, 91, 0.4);
+    }
+    .lobby-content {
+      display: flex;
+      gap: 3rem;
+      align-items: center;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    #qrcode { background: white; padding: 12px; border-radius: 8px; border: 3px solid var(--gold); }
+    .player-pill-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 1.5rem 0; min-height: 80px; }
+    .player-pill {
+      background: %23112219;
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 1.2rem;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .timer-bar {
+      width: 100%25;
+      height: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      margin-top: 1.5rem;
+      overflow: hidden;
+      border: 1px solid var(--gold);
+    }
+    .timer-fill {
+      height: 100%25;
+      width: 100%25;
+      background: linear-gradient(90deg, %2327ae60, var(--gold), %23c0392b);
+      transition: width 1s linear;
+    }
+    .tv-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+    .tv-opt {
+      padding: 1.5rem 2rem;
+      border-radius: 10px;
+      font-size: 1.6rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .opt-a { background: var(--btn-a); }
+    .opt-b { background: var(--btn-b); }
+    .opt-c { background: var(--btn-c); }
+    .opt-d { background: var(--btn-d); }
+    .tv-opt.correct { outline: 6px solid %23f1c40f; transform: scale(1.03); }
+    .tv-opt.dimmed { opacity: 0.3; }
+    .scoreboard-table { width: 100%25; max-width: 700px; margin: 1.5rem auto; border-collapse: collapse; font-size: 1.5rem; }
+    .scoreboard-table tr { border-bottom: 1px solid rgba(223, 177, 91, 0.2); }
+    .scoreboard-table td { padding: 12px 20px; }
+    .scoreboard-rank { font-family: 'Cinzel Decorative', cursive; color: var(--gold); width: 60px; }
+    .scoreboard-name { text-align: left; }
+    .scoreboard-score { font-weight: bold; color: var(--gold-light); text-align: right; }
+    #mobile-screen { display: none; width: 100%25; max-width: 480px; }
+    .mobile-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%25; height: 60vh; margin-top: 1rem; }
+    .mobile-btn {
+      border: none;
+      border-radius: 14px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
+    }
+    .mobile-btn:active { transform: scale(0.94); }
+    input[type=%22text%22] {
+      padding: 0.9rem 1.2rem;
+      border-radius: 8px;
+      border: 2px solid var(--gold);
+      background: %230d1a13;
+      color: %23fff;
+      font-size: 1.2rem;
+      width: 100%25;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.4); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class=%22container%22>
+    <div id=%22mode-selection%22 class=%22pieck-box%22>
+      <h1>De Sprookjesbos Quiz</h1>
+      <p style=%22font-size: 1.3rem; margin: 1rem 0 2rem;%22>Kies het type scherm om te starten:</p>
+      <div style=%22display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;%22>
+        <button class=%22btn%22 onclick=%22startAsTV()%22>📺 Dit scherm is de TV (Cast)</button>
+        <button class=%22btn%22 style=%22background: %23234b36;%22 onclick=%22startAsMobile()%22>📱 Ik speel mee op Telefoon</button>
+      </div>
+    </div>
+    <div id=%22tv-screen%22>
+      <div id=%22tv-lobby%22 class=%22pieck-box%22>
+        <h1>De Grote Efteling Sprookjesquiz</h1>
+        <p style=%22font-size: 1.4rem; margin-top: 0.5rem; color: var(--gold-light);%22>Pak je telefoon en speel mee!</p>
+        <div class=%22lobby-content%22>
+          <div id=%22qrcode%22></div>
+          <div style=%22text-align: left;%22>
+            <p style=%22font-size: 1.3rem;%22>1. Scan de QR-code met je camera</p>
+            <p style=%22font-size: 1.1rem; opacity: 0.8; margin-top: 0.3rem;%22>of open de quizpagina en vul de kamercode in:</p>
+            <h2 id=%22room-code-display%22 style=%22font-size: 2.8rem; margin-top: 0.5rem; letter-spacing: 5px; color: %23fff;%22>----</h2>
+          </div>
+        </div>
+        <h3>Aangemelde Spelers (<span id=%22player-count%22>0</span>)</h3>
+        <div id=%22tv-player-list%22 class=%22player-pill-grid%22></div>
+        <button id=%22btn-start-quiz%22 class=%22btn%22 style=%22display:none; margin-top: 1rem;%22 onclick=%22tvNextQuestion()%22>Start de Quiz!</button>
+      </div>
+      <div id=%22tv-question-view%22 class=%22pieck-box%22 style=%22display:none;%22>
+        <div class=%22tv-header%22>
+          <span id=%22tv-q-number%22 style=%22font-size: 1.4rem; color: var(--gold);%22>Vraag 1 van 20</span>
+          <span id=%22tv-q-timer%22 style=%22font-size: 1.8rem; font-weight: bold; color: var(--gold-light);%22>20s</span>
+        </div>
+        <h2 id=%22tv-q-text%22 style=%22font-size: 2.1rem; min-height: 80px; display:flex; align-items:center; justify-content:center;%22>Vraagtekst komt hier...</h2>
+        <div class=%22timer-bar%22>
+          <div id=%22tv-timer-bar%22 class=%22timer-fill%22></div>
+        </div>
+        <div class=%22tv-options-grid%22>
+          <div id=%22tv-opt-0%22 class=%22tv-opt opt-a%22><span>A</span> <span id=%22opt-text-0%22></span></div>
+          <div id=%22tv-opt-1%22 class=%22tv-opt opt-b%22><span>B</span> <span id=%22opt-text-1%22></span></div>
+          <div id=%22tv-opt-2%22 class=%22tv-opt opt-c%22><span>C</span> <span id=%22opt-text-2%22></span></div>
+          <div id=%22tv-opt-3%22 class=%22tv-opt opt-d%22><span>D</span> <span id=%22opt-text-3%22></span></div>
+        </div>
+        <p id=%22tv-answers-count%22 style=%22font-size: 1.3rem; color: var(--gold-light);%22>0 van de 0 spelers hebben geantwoord</p>
+      </div>
+      <div id=%22tv-intermission-view%22 class=%22pieck-box%22 style=%22display:none;%22>
+        <h2 id=%22tv-feedback-title%22 style=%22margin-bottom: 0.8rem;%22>Antwoord & Achtergrond</h2>
+        <p id=%22tv-trivia-text%22 style=%22font-size: 1.5rem; line-height: 1.6; max-width: 800px; margin: 0 auto 2rem; color: var(--gold-light);%22></p>
+        <h3>Tussenstand</h3>
+        <table class=%22scoreboard-table%22 id=%22tv-scoreboard%22></table>
+        <button id=%22tv-btn-next%22 class=%22btn%22 style=%22margin-top: 1.5rem;%22 onclick=%22tvNextQuestion()%22>Volgende Vraag</button>
+      </div>
+      <div id=%22tv-final-view%22 class=%22pieck-box%22 style=%22display:none;%22>
+        <h1>Einduitslag</h1>
+        <p style=%22font-size: 1.5rem; margin-bottom: 1.5rem;%22>Wie is de ultieme Efteling-sprookjeskenner?</p>
+        <table class=%22scoreboard-table%22 id=%22tv-final-scoreboard%22></table>
+      </div>
+    </div>
+    <div id=%22mobile-screen%22>
+      <div id=%22mobile-login%22 class=%22pieck-box%22>
+        <h2>Meedoen</h2>
+        <div style=%22margin-top: 1.5rem;%22>
+          <input type=%22text%22 id=%22mobile-room-input%22 placeholder=%22Kamercode (4 letters/cijfers)%22>
+          <input type=%22text%22 id=%22mobile-name-input%22 placeholder=%22Jouw Naam%22 maxlength=%2214%22>
+          <button class=%22btn%22 style=%22width: 100%25;%22 onclick=%22mobileJoin()%22>Doe Mee!</button>
+        </div>
+      </div>
+      <div id=%22mobile-waiting%22 class=%22pieck-box%22 style=%22display:none;%22>
+        <h2 id=%22mobile-wait-title%22>Je bent binnen!</h2>
+        <p style=%22font-size: 1.3rem; margin-top: 1rem;%22>Kijk naar het televisiescherm. Het spel begint zo...</p>
+      </div>
+      <div id=%22mobile-controls%22 style=%22display:none; width: 100%25;%22>
+        <p style=%22text-align: center; font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--gold);%22>Kies het juiste antwoord:</p>
+        <div class=%22mobile-options-grid%22>
+          <button class=%22mobile-btn opt-a%22 onclick=%22mobileSendAnswer(0)%22>A</button>
+          <button class=%22mobile-btn opt-b%22 onclick=%22mobileSendAnswer(1)%22>B</button>
+          <button class=%22mobile-btn opt-c%22 onclick=%22mobileSendAnswer(2)%22>C</button>
+          <button class=%22mobile-btn opt-d%22 onclick=%22mobileSendAnswer(3)%22>D</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const questions = [
+      { question: %22Wat roept Holle Bolle Gijs het meest bekend om afval te verzamelen?%22, options: [%22Dank u wel!%22, %22Papier hier!%22, %22Honger!%22, %22Lekker smikkelen!%22], correct: 1, trivia: %22De stem van de allereerste Holle Bolle Gijs werd ingesproken door filmmaker Peter Reijnders.%22 },
+      { question: %22Bij welk bekend sprookje hoort de figuur 'Langnek'?%22, options: [%22De Ganzenhoedster%22, %22De Zes Dienaren%22, %22Repelsteeltje%22, %22De Gouden Gans%22], correct: 1, trivia: %22Langnek is een van de dienaars uit het Grimm-sprookje 'De Zes Dienaren' en staat al sinds 1952 in het park.%22 },
+      { question: %22Welke kleur tulpen verschijnen er bij de Vliegende Fakir op het plein?%22, options: [%22Blauwe en witte%22, %22Gele en rode%22, %22Roze en oranje%22, %22Paarse en gele%22], correct: 1, trivia: %22Tijdens het fluitspel bloeien aan de ene zijde gele tulpen en aan de overkant rode tulpen op.%22 },
+      { question: %22Waar verstopte het zevende en kleinste geitje zich voor de Wolf?%22, options: [%22Onder het bed%22, %22In de grote klokkenkast%22, %22In de bakoven%22, %22In de klerenkast%22], correct: 1, trivia: %22De wolf zag de klokkenkast over het hoofd, waarna het kleinste geitje samen met moeder geit de stenen in de wolf zijn buik naaide.%22 },
+      { question: %22Wie schreef het oorspronkelijke sprookje van 'De Indische Waterlelies'?%22, options: [%22Koningin Fabiola van België%22, %22Hans Christian Andersen%22, %22Anton Pieck%22, %22De Gebroeders Grimm%22], correct: 0, trivia: %22Koningin Fabiola bracht in 1955 een sprookjesboek uit. De Efteling opende deze attractie in 1966.%22 },
+      { question: %22Wat stal Klein Duimpje van de reus terwijl deze sliep?%22, options: [%22Zijn gouden kroon%22, %22Een zak diamanten%22, %22Zijn Zevenmijlslaarzen%22, %22Zijn toverstaf%22], correct: 2, trivia: %22Met de Zevenmijlslaarzen rende Klein Duimpje razendsnel naar het paleis van de koning.%22 },
+      { question: %22Wat gebeurt er als Vrouw Holle haar kussens uitschudt?%22, options: [%22Het gaat regenen%22, %22Het gaat sneeuwen%22, %22Er ontstaat een storm%22, %22De sterren gaan twinkelen%22], correct: 1, trivia: %22Wanneer de veertjes uit haar kussen ronddwarrelen, sneeuwt het op aarde.%22 },
+      { question: %22Wat had Roodkapje in haar mandje voor haar zieke grootmoeder?%22, options: [%22Koele melk en brood%22, %22Verse soep en fruit%22, %22Koek/taart en wijn%22, %22Appels en honing%22], correct: 2, trivia: %22In het originele sprookje van Grimm kreeg Roodkapje taart en wijn mee om haar oma te sterken.%22 },
+      { question: %22Wat moet er geroepen worden om de ezel uit 'Tafeltje Dek Je' goud te laten werpen?%22, options: [%22Ezel open u!%22, %22Ezeltje strek je!%22, %22Hup ezel, hup!%22, %22Goud voor de waard!%22], correct: 1, trivia: %22Zodra je riep 'Ezeltje strek je!', wierp het dier gouden dukaten op het kleed.%22 },
+      { question: %22Welk muziekinstrument bespeelt de jongen in 'De Vliegende Fakir'?%22, options: [%22Een fluit%22, %22Een harp%22, %22Een trompet%22, %22Een luit%22], correct: 0, trivia: %22De fakir speelt op zijn magische fluit om de rode en gele tulpen om beurten te laten ontluiken.%22 },
+      { question: %22Wat verloor Assepoester op de trappen van het kasteel om middernacht?%22, options: [%22Een gouden tiara%22, %22Een glazen muiltje%22, %22Haar satijnen handschoen%22, %22Een parelketting%22], correct: 1, trivia: %22De prins zocht het hele rijk af tot hij het meisje vond aan wie het glazen schoentje paste.%22 },
+      { question: %22Waarmee prikte Doornroosje zich voordat ze in een honderdjarige slaap viel?%22, options: [%22Een giftige rozenstruik%22, %22Het spoel van een spinnenwiel%22, %22Een vergiftigde dolk%22, %22Een betoverde naald%22], correct: 1, trivia: %22Het kasteel van Doornroosje was een van de allereerste sprookjes bij de opening van het Sprookjesbos in 1952.%22 },
+      { question: %22Van welk materiaal was het huisje van de heks in 'Hans en Grietje' gemaakt?%22, options: [%22Snoep, koek en pannenkoek%22, %22Goud en marmer%22, %22Massief boomstronk-hout%22, %22Modder en mos%22], correct: 0, trivia: %22'Knibbel, knabbel, knuisje, wie knabbelt er aan mijn huisje?' riep de heks toen ze snoepten.%22 },
+      { question: %22Hoe heette het kleine mannetje dat goud kon spinnen uit stro?%22, options: [%22Repelsteeltje%22, %22Dwerg Pluis%22, %22Tijl Uilenspiegel%22, %22Kabouter Ko%22], correct: 0, trivia: %22'Niemand weet, niemand weet, dat ik Repelsteeltje heet!' danste hij rond zijn vuurtje.%22 },
+      { question: %22Hoe werd de betovering van de Kikkerkoning in het originele sprookje verbroken?%22, options: [%22Een liefdevolle kus%22, %22Hij werd tegen de muur gegooid%22, %22Hij dronk magisch bronwater%22, %22Onder water gedompeld%22], correct: 1, trivia: %22In het originele sprookje van Grimm kuste de prinses hem niet, maar gooide ze hem tegen de wand!%22 },
+      { question: %22Welke bijzondere vogel bouwt zijn nest op de schoorsteen van het Efteling-theehuis?%22, options: [%22De rode ibis%22, %22De ooievaar%22, %22De zilverreiger%22, %22De pelikaan%22], correct: 1, trivia: %22De klepperende ooievaar op het dak van het theehuis is al sinds de beginjaren een herkenningspunt.%22 },
+      { question: %22In welk sprookje probeert een keizer kleren te dragen die onzichtbaar zijn voor domme mensen?%22, options: [%22De Nieuwe Kleren van de Keizer%22, %22De Koning Zonder Kroon%22, %22De Gouden Vogel%22, %22De IJdele Hertog%22], correct: 0, trivia: %22Pas toen een klein kind riep 'Maar hij heeft niets aan!' viel de keizer door de mand.%22 },
+      { question: %22Wie is de illustrator achter de romantische stijl van het Sprookjesbos?%22, options: [%22Marten Toonder%22, %22Anton Pieck%22, %22Rien Poortvliet%22, %22Dick Bruna%22], correct: 1, trivia: %22Anton Pieck bepaalde de nostalgische kleuren en unieke details die de Efteling beroemd maakten.%22 },
+      { question: %22Wat spuwt de reusachtige draak als je zijn gouden kroon probeert aan te raken?%22, options: [%22Grote zeepbellen%22, %22Rook en een luid gebrul%22, %22Koud water%22, %22Vuurvlammen%22], correct: 1, trivia: %22Draak Lichtgeraakt bewaakt al sinds 1979 fanatiek de schatkist met de gouden kroon.%22 },
+      { question: %22Hoe heet de pratende boom in het Efteling Sprookjesbos?%22, options: [%22De Oude Eik%22, %22Sprookjesboom%22, %22Knoest de Prater%22, %22Grootvader Berk%22], correct: 1, trivia: %22Sprookjesboom heeft interactieve takken en vertelt met warme stem verhalen over het bos.%22 }
+    ];
+    let peer = null, isHost = false, players = {}, currentQuestionIdx = 0, timerInterval = null, timeLeft = 20, hostConn = null;
+    window.addEventListener('load', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomParam = urlParams.get('room');
+      if (roomParam) {
+        document.getElementById('mobile-room-input').value = roomParam;
+        startAsMobile();
+      }
+    });
+    function startAsTV() {
+      isHost = true;
+      document.getElementById('mode-selection').style.display = 'none';
+      document.getElementById('tv-screen').style.display = 'block';
+      const roomCode = Math.floor(1000 + Math.random() * 9000).toString();
+      document.getElementById('room-code-display').innerText = roomCode;
+      const joinUrl = window.location.origin + window.location.pathname + '?room=' + roomCode;
+      new QRCode(document.getElementById(%22qrcode%22), { text: joinUrl, width: 170, height: 170 });
+      peer = new Peer('efteling-' + roomCode);
+      peer.on('connection', (conn) => {
+        conn.on('data', (data) => handleIncomingData(conn.peer, data, conn));
+        conn.on('close', () => { delete players[conn.peer]; updatePlayerList(); });
+      });
+    }
+    function handleIncomingData(peerId, data, conn) {
+      if (data.type === 'JOIN') {
+        players[peerId] = { name: data.name, score: 0, currentAnswer: null, conn: conn };
+        updatePlayerList();
+        conn.send({ type: 'JOINED_SUCCESS' });
+      } else if (data.type === 'ANSWER') {
+        if (players[peerId] && players[peerId].currentAnswer === null) {
+          players[peerId].currentAnswer = data.choice;
+          checkAllAnswered();
+        }
+      }
+    }
+    function updatePlayerList() {
+      const listEl = document.getElementById('tv-player-list');
+      listEl.innerHTML = '';
+      const playerKeys = Object.keys(players);
+      document.getElementById('player-count').innerText = playerKeys.length;
+      playerKeys.forEach(id => {
+        const span = document.createElement('span');
+        span.className = 'player-pill';
+        span.innerText = players[id].name;
+        listEl.appendChild(span);
+      });
+      if (playerKeys.length > 0) document.getElementById('btn-start-quiz').style.display = 'inline-block';
+    }
+    function tvNextQuestion() {
+      if (currentQuestionIdx >= questions.length) { showFinalScores(); return; }
+      document.getElementById('tv-lobby').style.display = 'none';
+      document.getElementById('tv-intermission-view').style.display = 'none';
+      document.getElementById('tv-question-view').style.display = 'block';
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('tv-opt-' + i).classList.remove('correct', 'dimmed');
+      }
+      Object.keys(players).forEach(id => { players[id].currentAnswer = null; });
+      const q = questions[currentQuestionIdx];
+      document.getElementById('tv-q-number').innerText = `Vraag ${currentQuestionIdx + 1} van ${questions.length}`;
+      document.getElementById('tv-q-text').innerText = q.question;
+      for (let i = 0; i < 4; i++) { document.getElementById('opt-text-' + i).innerText = q.options[i]; }
+      updateAnswerStatus();
+      broadcast({ type: 'QUESTION_START' });
+      timeLeft = 20;
+      document.getElementById('tv-q-timer').innerText = timeLeft + 's';
+      document.getElementById('tv-timer-bar').style.width = '100%25';
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('tv-q-timer').innerText = timeLeft + 's';
+        document.getElementById('tv-timer-bar').style.width = (timeLeft / 20 * 100) + '%25';
+        if (timeLeft <= 0) { clearInterval(timerInterval); tvEndQuestion(); }
+      }, 1000);
+    }
+    function checkAllAnswered() {
+      updateAnswerStatus();
+      if (Object.values(players).every(p => p.currentAnswer !== null)) {
+        clearInterval(timerInterval);
+        setTimeout(tvEndQuestion, 600);
+      }
+    }
+    function updateAnswerStatus() {
+      const total = Object.keys(players).length;
+      const count = Object.values(players).filter(p => p.currentAnswer !== null).length;
+      document.getElementById('tv-answers-count').innerText = `${count} van de ${total} spelers hebben geantwoord`;
+    }
+    function tvEndQuestion() {
+      broadcast({ type: 'QUESTION_END' });
+      const q = questions[currentQuestionIdx];
+      Object.values(players).forEach(p => {
+        if (p.currentAnswer === q.correct) p.score += (100 + timeLeft * 10);
+      });
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById('tv-opt-' + i);
+        if (i === q.correct) el.classList.add('correct'); else el.classList.add('dimmed');
+      }
+      setTimeout(() => {
+        document.getElementById('tv-question-view').style.display = 'none';
+        document.getElementById('tv-intermission-view').style.display = 'block';
+        document.getElementById('tv-trivia-text').innerText = q.trivia;
+        renderScoreboard('tv-scoreboard');
+        currentQuestionIdx++;
+      }, 2500);
+    }
+    function renderScoreboard(tableId) {
+      const sorted = Object.values(players).sort((a,b) => b.score - a.score);
+      const table = document.getElementById(tableId);
+      table.innerHTML = '';
+      sorted.forEach((p, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td class=%22scoreboard-rank%22>%23${idx + 1}</td><td class=%22scoreboard-name%22>${p.name}</td><td class=%22scoreboard-score%22>${p.score} pt</td>`;
+        table.appendChild(row);
+      });
+    }
+    function showFinalScores() {
+      document.getElementById('tv-intermission-view').style.display = 'none';
+      document.getElementById('tv-final-view').style.display = 'block';
+      renderScoreboard('tv-final-scoreboard');
+      broadcast({ type: 'GAME_OVER' });
+    }
+    function broadcast(msg) {
+      Object.values(players).forEach(p => { if (p.conn && p.conn.open) p.conn.send(msg); });
+    }
+    function startAsMobile() {
+      document.getElementById('mode-selection').style.display = 'none';
+      document.getElementById('mobile-screen').style.display = 'block';
+    }
+    function mobileJoin() {
+      const code = document.getElementById('mobile-room-input').value.trim();
+      const name = document.getElementById('mobile-name-input').value.trim();
+      if (!code || !name) { alert('Vul zowel de kamercode als je naam in!'); return; }
+      peer = new Peer();
+      peer.on('open', () => {
+        hostConn = peer.connect('efteling-' + code);
+        hostConn.on('open', () => hostConn.send({ type: 'JOIN', name: name }));
+        hostConn.on('data', (data) => {
+          if (data.type === 'JOINED_SUCCESS') {
+            document.getElementById('mobile-login').style.display = 'none';
+            document.getElementById('mobile-waiting').style.display = 'block';
+          } else if (data.type === 'QUESTION_START') {
+            document.getElementById('mobile-waiting').style.display = 'none';
+            document.getElementById('mobile-controls').style.display = 'block';
+            document.querySelectorAll('.mobile-btn').forEach(b => b.disabled = false);
+          } else if (data.type === 'QUESTION_END') {
+            document.getElementById('mobile-controls').style.display = 'none';
+            document.getElementById('mobile-wait-title').innerText = %22Kijk naar de TV!%22;
+            document.getElementById('mobile-waiting').style.display = 'block';
+          } else if (data.type === 'GAME_OVER') {
+            document.getElementById('mobile-controls').style.display = 'none';
+            document.getElementById('mobile-wait-title').innerText = %22De quiz is afgelopen!%22;
+            document.getElementById('mobile-waiting').style.display = 'block';
+          }
+        });
+        hostConn.on('error', () => alert('Kan geen verbinding maken met de TV kamer. Controleer de code!'));
+      });
+    }
+    function mobileSendAnswer(choiceIdx) {
+      if (hostConn && hostConn.open) {
+        hostConn.send({ type: 'ANSWER', choice: choiceIdx });
+        document.querySelectorAll('.mobile-btn').forEach(b => b.disabled = true);
+        document.getElementById('mobile-controls').style.display = 'none';
+        document.getElementById('mobile-wait-title').innerText = %22Antwoord verzonden! Even geduld...%22;
+        document.getElementById('mobile-waiting').style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>" download="index.html" style="display:inline-block; background-color:#dfb15b; color:#0f1c15; padding:14px 28px; font-weight:bold; font-family:sans-serif; text-decoration:none; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.3); margin: 15px 0;">
+  ⬇️ Download index.html
+</a>
